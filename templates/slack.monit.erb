@@ -1,0 +1,8 @@
+### THIS FILE IS MANAGED BY PUPPET.  ANY MANUAL CHANGES WILL BE OVERWRITTEN.
+
+check system <%= @hostname %>-slack
+    if loadavg (5min) > <%= scope['monit::loadavg_5min'] %> for <%= scope['monit::min_cycles'] %> cycles then exec "<%= @bad %>" else if succeeded then exec "<%= @good %>"
+    if memory usage > <%= scope['monit::memory_usage'] %> for <%= scope['monit::min_cycles'] %> cycles then exec "<%= @bad %>" else if succeeded then exec "<%= @good %>"
+
+check filesystem with path /
+    if space usage > <%= scope['monit::space_usage'] %> for <%= scope['monit::min_cycles'] %> cycles then exec "<%= @bad %>" else if succeeded then exec "<%= @good %>"

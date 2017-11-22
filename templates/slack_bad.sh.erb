@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Slack webhook script - pulls monit variables
+
+URL=$(cat /etc/monit/slack_url)
+
+COLOR=${MONIT_COLOR:-$([[ $MONIT_EVENT == *"succeeded"* ]] && echo good || echo danger)}
+TEXT=$(echo "$MONIT_EVENT: $MONIT_DESCRIPTION" | python -c "import json,sys;print(json.dumps(sys.stdin.read()))")
+
+
+PAYLOAD="{
+  \"attachments\": [
+   {
+    \"title\": \"Alert - @channel\",
+    \"text\": $TEXT,
+    \"color\": \"danger\",
+    \"mrkdwn_in\": [\"text\"],
+    \"fields\": [
+      { \"title\": \"Date\", \"value\": \"$MONIT_DATE\", \"short\": true },
+      { \"title\": \"Host\", \"value\": \"$MONIT_HOST\", \"short\": true }
+    ]
+   }
+  ]
+}"
+
+curl -s -X POST --data-urlencode "payload=$PAYLOAD" $URL 
